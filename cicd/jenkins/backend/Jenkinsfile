@@ -57,6 +57,8 @@ pipeline {
                     def newSelector = isOdd ? 'blue' : 'green'
                     def serviceName = 'backend-svc'
 
+                    def deploymentName = deploymentFile.replace('backend-deployment-', '').replace('.yml', '')
+
                     // SSH 전송 플러그인 사용
                     sshPublisher(
                         // 오류 발생 시 진행을 멈춤
@@ -82,7 +84,7 @@ pipeline {
                                             sed -i "s/latest/1.${BUILD_ID}/g" /home/test/cicd/k8s/backend/${deploymentFile}
                                             kubectl apply -f /home/test/cicd/k8s/backend/${deploymentFile}
 
-                                            kubectl scale deployment ${deploymentFile.replace('.yml', '')} --replicas=2
+                                            kubectl scale deployment ${deploymentName} --replicas=2
 
                                             kubectl scale deployment ${otherDeployment} --replicas=0
 
