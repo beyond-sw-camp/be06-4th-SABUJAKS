@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment-v1
+spec:
+  selector:
+    matchLabels:
+      type: frontend
+      ver: v1
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        type: frontend
+        ver: v1
+    spec:
+      containers:
+        - name: frontend-v1
+          image: sabujaks/frontend:latest
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 10
+      terminationGracePeriodSeconds: 0
