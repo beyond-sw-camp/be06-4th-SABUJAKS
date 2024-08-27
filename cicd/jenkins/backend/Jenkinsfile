@@ -47,7 +47,7 @@ pipeline {
             }
         }
 
-// 6. SSH 전송 및 배포 관리
+        // 6. SSH 전송 및 배포 관리
         stage('SSH transfer') {
             steps {
                 script {
@@ -55,7 +55,9 @@ pipeline {
                     def deploymentFile = isOdd ? 'backend-deployment-blue.yml' : 'backend-deployment-green.yml'
                     def otherDeployment = isOdd ? 'backend-deployment-green' : 'backend-deployment-blue'
                     def newSelector = isOdd ? 'blue' : 'green'
-                    def serviceName = 'backend-svc' // 서비스 이름으로 바꿔야 함
+                    def serviceName = 'backend-svc'
+
+                    def deploymentName = deploymentFile.replace('backend-deployment-', '').replace('.yml', '')
 
                     // SSH 전송 플러그인 사용
                     sshPublisher(
@@ -82,11 +84,11 @@ pipeline {
                                             sed -i "s/latest/1.${BUILD_ID}/g" /home/test/cicd/k8s/backend/${deploymentFile}
                                             kubectl apply -f /home/test/cicd/k8s/backend/${deploymentFile}
 
-                                            # Scale down the other deployment
+                                            kubectl scale deployment ${deploymentName} --replicas=2
+
                                             kubectl scale deployment ${otherDeployment} --replicas=0
 
-                                            # Update the service selector to the new deployment
-                                            kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}"}}}'
+                                            kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}","type":"backend"}}}'
                                         """
                                     )
                                 ]
