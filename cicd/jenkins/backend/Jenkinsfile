@@ -3,18 +3,10 @@ pipeline {
     stages {
         // 1. 깃 클론
         stage('git clone') {
-//             steps {
-//                 def branchName = env.BRANCH_NAME
-//                 echo "Checking out branch: ${branchName}"
-//                 git branch: branchName, url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
-//             }
-            script {
-                // 현재 푸시된 브랜치 이름을 Jenkins 환경 변수에서 가져옵니다.
+            steps {
                 def branchName = env.BRANCH_NAME
                 echo "Checking out branch: ${branchName}"
-
-                // 'git' 스텝을 사용하여 지정된 브랜치를 체크아웃합니다.
-                git branch: branchName, url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS.git'
+                git branch: branchName, url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
             }
         }
 
