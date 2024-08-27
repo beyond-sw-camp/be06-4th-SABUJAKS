@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-deployment-test
+  name: backend-deployment-green
 spec:
   selector:
     matchLabels:
       type: backend
-      ver: v1
+      deployment: green
   replicas: 2
   strategy:
     type: RollingUpdate
@@ -15,10 +15,10 @@ spec:
     metadata:
       labels:
         type: backend
-        ver: v1
+        deployment: green
     spec:
       containers:
-        - name: backend-v1
+        - name: backend-green
           image: sabujaks/backend:latest
           readinessProbe:
             httpGet:
