@@ -47,7 +47,7 @@ pipeline {
             }
         }
 
-// 6. SSH 전송 및 배포 관리
+        // 6. SSH 전송 및 배포 관리
         stage('SSH transfer') {
             steps {
                 script {
@@ -82,10 +82,10 @@ pipeline {
                                             sed -i "s/latest/1.${BUILD_ID}/g" /home/test/cicd/k8s/backend/${deploymentFile}
                                             kubectl apply -f /home/test/cicd/k8s/backend/${deploymentFile}
 
-                                            # Scale down the other deployment
+                                            kubectl scale deployment ${deploymentFile.replace('.yml', '')} --replicas=2
+
                                             kubectl scale deployment ${otherDeployment} --replicas=0
 
-                                            # Update the service selector to the new deployment
                                             kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}"}}}'
                                         """
                                     )
