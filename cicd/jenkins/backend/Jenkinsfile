@@ -8,7 +8,6 @@ pipeline {
 
     // 파이프라인의 실행 단계 정의
     stages {
-
         // 1. 깃 클론
         stage('git clone') {
             steps {
