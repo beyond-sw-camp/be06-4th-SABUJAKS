@@ -1,0 +1,112 @@
+pipeline {
+    agent any
+
+    // 파이프라인 실행에 필요한 도구로 Gradle 지정
+    tools {
+        gradle "gradle-8.8" // Gradle 버전은 실제로 설치된 버전에 맞게 조정해 주세요
+    }
+
+    // 파이프라인의 실행 단계 정의
+    stages {
+
+        // 1. 깃 클론
+        stage('git clone') {
+            steps {
+                git branch: 'backend/*', url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+            }
+        }
+
+        // 2. gradle 빌드
+        stage('Build') {
+            steps {
+                sh '../backend/gradlew build -x test'
+            }
+        }
+
+        // 3. Docker 빌드
+        stage('Docker Build') {
+            steps {
+                script {
+                    // 도커 이미지 : hyungdoyou/be:2.[빌드 숫자]
+                    sh 'docker build --tag sabujaks/backend:1.$BUILD_ID .'
+                }
+            }
+            post {
+                // Docker 빌드 성공 시 슬랙 채널 ( #테스트 ) 로 성공 알림 발송
+                success {
+                 // 깃헙으로 응답
+                }
+
+                // Docker 빌드 실패 시 슬랙 채널 ( #테스트 ) 로 실패 알림 발송
+                failure {
+            }
+        }
+
+        // 4. Docker Push
+        stage('Docker Push') {
+            steps {
+                script {
+                    // Docker 로그인
+                    withCredentials([usernamePassword(credentialsId: 'docker_credentials', usernameVariable: 'DOCKER_EMAIL', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "docker login -u ${DOCKER_EMAIL} -p ${DOCKER_PASSWORD}"
+                    }
+                    // Docker Push
+                    sh 'docker push sabujaks/backend:1.$BUILD_ID'
+                }
+            }
+            post {
+                // Docker Push 성공 시 슬랙 채널 ( #테스트 ) 로 성공 알림 발송
+                success {
+                }
+                // Docker Push 실패 시 슬랙 채널 ( #테스트 ) 로 실패 알림 발송
+                failure {
+                }
+            }
+        }
+
+        // 5. SSH 전송
+        stage('SSH transfer') {
+            steps {
+                // SSH 전송 플러그인 사용
+                sshPublisher(
+                    // 오류 발생 시 진행을 멈춤
+                    continueOnError: false,
+                    // 오류 발생 시 파이프라인을 실패시킴
+                    failOnError: true,
+                    // 전송자 목록
+                    publishers: [
+                        // SSH 전송 설명
+                        sshPublisherDesc(
+                            // SSH 서버 설정 이름 지정 ( master 노드 )
+                            configName: "k8s-master",
+                            // 자세한 출력 모드 활성화
+                            verbose: true,
+                            transfers: [
+                                sshTransfer(
+                                    // 전송할 파일 지정
+                                    sourceFiles: "backend-deployment.yml",
+                                    // 원격 디렉토리 지정 ( 원격서버로 파일을 전송할 위치 )
+                                    remoteDirectory: "/home/test/",
+                                    // 전송 후 야멜 파일의 VERSION을 파이프라인 빌드 숫자로 변경
+                                    // backend-deployment 야멜 파일 실행
+                                    execCommand: '''
+                                        sed -i "s/latest/1.$BUILD_ID/g" backend-deployment.yml
+                                        kubectl apply -f /home/test/backend-deployment.yml
+                                    '''
+                                )
+                            ]
+                        )
+                    ]
+                )
+            }
+            post {
+                // SSH Transfer 성공 시 슬랙 채널 ( #테스트 ) 로 성공 알림 발송
+                success {
+                }
+                // SSH Transfer 실패 시 슬랙 채널 ( #테스트 ) 로 실패 알림 발송
+                failure {
+                }
+            }
+        }
+    }
+}
