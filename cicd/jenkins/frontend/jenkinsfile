@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('git clone') {
             steps {
-                git branch: 'frontend/cicd', url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                git branch: 'frontend/*', url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
             }
         }
         stage('npm install & build') {
