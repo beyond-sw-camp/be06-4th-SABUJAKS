@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment-v1
+  name: frontend-deployment-blue
 spec:
   selector:
     matchLabels:
       type: frontend
-      ver: v1
+      deployment: blue
   replicas: 2
   strategy:
     type: RollingUpdate
@@ -15,22 +15,73 @@ spec:
     metadata:
       labels:
         type: frontend
-        ver: v1
+        deployment: blue
     spec:
       containers:
-        - name: frontend-v1
+        - name: frontend-blue
           image: sabujaks/frontend:latest
           readinessProbe:
             httpGet:
-              path: /
-              port: 80
+              path: /test
+              port: 8080
             initialDelaySeconds: 20
             periodSeconds: 10
             successThreshold: 3
           livenessProbe:
             httpGet:
-              path: /
-              port: 80
+              path: /test
+              port: 8080
             initialDelaySeconds: 20
             periodSeconds: 10
       terminationGracePeriodSeconds: 0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment-green
+spec:
+  selector:
+    matchLabels:
+      type: frontend
+      deployment: green
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        type: frontend
+        deployment: green
+    spec:
+      containers:
+        - name: frontend-green
+          image: sabujaks/frontend:latest
+          readinessProbe:
+            httpGet:
+              path: /test
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /test
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+      terminationGracePeriodSeconds: 0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-svc
+spec:
+  selector:
+    type: frontend
+    deployment: blue
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  type: LoadBalancer
