@@ -88,7 +88,7 @@ pipeline {
 
                                             kubectl scale deployment ${otherDeployment} --replicas=0
 
-                                            kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}"}}}'
+                                            kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}","type":"backend"}}}'
                                         """
                                     )
                                 ]
