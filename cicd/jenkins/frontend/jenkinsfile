@@ -65,18 +65,17 @@ pipeline {
                                                 # $BUILD_ID의 값이 짝수인지 홀수인지 확인
                                                 if [ $(($BUILD_ID % 2)) -eq 0 ]; then
                                                   # 짝수일 경우, green deployment로 이미지 변경 및 blue replicas를 0으로 설정
-                                                  sed -i "s/image: sabujaks\/frontend:.*/image: sabujaks\/frontend:1.$BUILD_ID/g" $DEPLOYMENT_FILE
+                                                  sed -i "s|image: sabujaks/frontend:.*|image: sabujaks/frontend:1.$BUILD_ID|g" $DEPLOYMENT_FILE
                                                   kubectl scale deployment frontend-deployment-blue --replicas=0
                                                   kubectl apply -f $DEPLOYMENT_FILE
                                                   kubectl scale deployment frontend-deployment-green --replicas=2
                                                 else
                                                   # 홀수일 경우, blue deployment로 이미지 변경 및 green replicas를 0으로 설정
-                                                  sed -i "s/image: sabujaks\/frontend:.*/image: sabujaks\/frontend:1.$BUILD_ID/g" $DEPLOYMENT_FILE
+                                                  sed -i "s|image: sabujaks|frontend:.*|image: sabujaks|frontend:1.$BUILD_ID/g" $DEPLOYMENT_FILE
                                                   kubectl scale deployment frontend-deployment-green --replicas=0
                                                   kubectl apply -f $DEPLOYMENT_FILE
                                                   kubectl scale deployment frontend-deployment-blue --replicas=2
                                                 fi
-
                                             '''
                                         )
                                     ]
