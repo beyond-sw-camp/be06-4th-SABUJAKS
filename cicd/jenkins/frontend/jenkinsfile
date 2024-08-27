@@ -1,0 +1,17 @@
+pipeline {
+    agent any
+    stages {
+
+        // 1. 깃 클론
+        stage('git clone') {
+            steps {
+                git branch: 'backend/cicd', url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+            }
+        }
+        stage('test'){
+            steps {
+                sh 'echo test2'
+            }
+        }
+    }
+}
