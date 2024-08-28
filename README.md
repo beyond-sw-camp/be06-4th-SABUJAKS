@@ -143,8 +143,10 @@ Jenkins server 1 🖥️<br>
 
 
 # 💡 CI/CD 테스트 및 결과
-무중단 배포 gif 업로드 예정
 <!--예시 [시연영상](https://youtu.be/rzBV5B_kKbU)-->
+### 백엔드 Blue/Green 배포
+![백엔드 배포](https://github.com/user-attachments/assets/e42db20c-8a54-433f-85e6-bc4857d2e7cf)
+
 <br><br><br><br><br>
 
 
