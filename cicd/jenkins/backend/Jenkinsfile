@@ -14,14 +14,14 @@ pipeline {
         // 2. 권한 추가
         stage('Add Permission') {
             steps {
-                sh 'chmod +x /var/lib/jenkins/workspace/test4/backend/gradlew'
+                sh 'chmod +x /var/lib/jenkins/workspace/sabujaks-backend/backend/gradlew'
             }
         }
 
         // 3. gradle 빌드
         stage('Build') {
             steps {
-                dir('/var/lib/jenkins/workspace/test4/backend') {
+                dir('/var/lib/jenkins/workspace/sabujaks-backend/backend') {
                     sh './gradlew bootJar'
                 }
             }
