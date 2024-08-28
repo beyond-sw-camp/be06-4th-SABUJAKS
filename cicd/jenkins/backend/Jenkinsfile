@@ -9,7 +9,7 @@ pipeline {
                     def branchName = fullBranchName.replaceFirst(/^origin\//, '')
                     echo "Checking out branch: ${branchName}"
 
-                    if (!branchName.startsWith('origin/backend/')) {
+                    if (!branchName.startsWith('backend/')) {
                         error "This pipeline only runs for backend branches."
                     }
 

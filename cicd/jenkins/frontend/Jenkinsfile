@@ -5,10 +5,11 @@ pipeline {
         stage('git clone') {
             steps {
                 script {
-                    def branchName = env.GIT_BRANCH
+                    def fullBranchName = env.GIT_BRANCH
+                    def branchName = fullBranchName.replaceFirst(/^origin\//, '')
                     echo "Checking out branch: ${branchName}"
 
-                    if (!branchName.startsWith('origin/frontend/')) {
+                    if (!branchName.startsWith('frontend/')) {
                         error "This pipeline only runs for frontend branches."
                     }
 
