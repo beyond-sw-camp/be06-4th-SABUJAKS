@@ -51,7 +51,7 @@ pipeline {
                     def otherDeployment = isOdd ? 'frontend-deployment-green' : 'frontend-deployment-blue'
                     def newSelector = isOdd ? 'blue' : 'green'
                     def serviceName = 'frontend-svc'
-
+                    def PREV_BUILD_ID = BUILD_ID.toInteger() - 2
                     def deploymentName = deploymentFile.replace('frontend-deployment-', '').replace('.yml', '')
 
                     // SSH 전송 플러그인 사용
@@ -80,6 +80,7 @@ pipeline {
                                             kubectl apply -f /home/test/cicd/k8s/frontend/${deploymentFile}
                                             kubectl scale deployment ${deploymentName} --replicas=2
                                             kubectl scale deployment ${otherDeployment} --replicas=0
+                                            kubectl delete rs -l 'image=sabujaks/frontend:1.${PREV_BUILD_ID}'
                                             kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}","type":"frontend"}}}'
                                         """
                                     )
