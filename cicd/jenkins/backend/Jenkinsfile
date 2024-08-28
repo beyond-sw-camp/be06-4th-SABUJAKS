@@ -5,8 +5,7 @@ pipeline {
         stage('git clone') {
             steps {
                 script {
-                    def branchName = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-
+                    def branchName = env.GIT_BRANCH
                     echo "Checking out branch: ${branchName}"
                     git branch: branchName, url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
