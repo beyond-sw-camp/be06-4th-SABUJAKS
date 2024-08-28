@@ -50,7 +50,6 @@ pipeline {
                     def deploymentFile = isOdd ? 'frontend-deployment-blue.yml' : 'frontend-deployment-green.yml'
                     def otherDeployment = isOdd ? 'frontend-deployment-green' : 'frontend-deployment-blue'
                     def newSelector = isOdd ? 'blue' : 'green'
-                    def serviceFile = 'frontend-service.yml'
                     def serviceName = 'frontend-svc'
 
                     def deploymentName = deploymentFile.replace('frontend-deployment-', '').replace('.yml', '')
@@ -79,7 +78,6 @@ pipeline {
                                         execCommand: """
                                             sed -i "s/latest/1.${BUILD_ID}/g" /home/test/cicd/k8s/frontend/${deploymentFile}
                                             kubectl apply -f /home/test/cicd/k8s/frontend/${deploymentFile}
-                                            kubectl apply -f /home/test/cicd/k8s/frontend/${serviceFile}
                                             kubectl scale deployment ${deploymentName} --replicas=2
                                             kubectl scale deployment ${otherDeployment} --replicas=0
                                             kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}","type":"frontend"}}}'
