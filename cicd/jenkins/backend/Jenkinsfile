@@ -7,7 +7,10 @@ pipeline {
                 script {
                     def branchName = env.GIT_BRANCH.replaceFirst("origin/", "")
                     echo "Branch Name: ${branchName}"
-                    git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+//                     git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: branchName]],
+                        userRemoteConfigs: [[url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS']]])
                 }
             }
         }
