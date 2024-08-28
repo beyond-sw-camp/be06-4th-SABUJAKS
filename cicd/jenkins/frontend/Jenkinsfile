@@ -6,6 +6,7 @@ pipeline {
             steps {
                 script {
                     def fullBranchName = env.GIT_BRANCH
+                    echo "Checking out full branch: ${fullBranchName}"
                     def branchName = fullBranchName.replaceFirst(/^origin\//, '')
                     echo "Checking out branch: ${branchName}"
 
