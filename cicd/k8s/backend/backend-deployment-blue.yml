@@ -26,11 +26,11 @@ spec:
               port: 8080
             initialDelaySeconds: 20
             periodSeconds: 10
-            successThreshold: 20
+            successThreshold: 3
           livenessProbe:
             httpGet:
               path: /test
               port: 8080
-            initialDelaySeconds: 30
+            initialDelaySeconds: 20
             periodSeconds: 10
       terminationGracePeriodSeconds: 0
