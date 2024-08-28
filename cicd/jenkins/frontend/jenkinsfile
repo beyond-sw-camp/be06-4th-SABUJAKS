@@ -1,17 +1,17 @@
 pipeline {
     agent any
     stages {
-        // 1. git clone
+        // 1. 깃 클론
         stage('git clone') {
             steps {
                 script {
                     def branchName = env.GIT_BRANCH.replaceFirst("origin/", "")
                     echo "Checking out branch: ${branchName}"
+
                     git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
             }
         }
-
         // 2. npm install && build
         stage('npm install & build') {
             steps {
@@ -89,5 +89,5 @@ pipeline {
                 }
             }
         }
-            }
-        }
+    }
+}
