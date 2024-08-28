@@ -12,33 +12,24 @@ pipeline {
                 }
             }
         }
-
-        // 2. 권한 추가
-        stage('Add Permission') {
+        // 2. npm install && build
+        stage('npm install & build') {
             steps {
-                sh 'chmod +x /var/lib/jenkins/workspace/sabujaks-backend/backend/gradlew'
-            }
-        }
-
-        // 3. gradle 빌드
-        stage('Build') {
-            steps {
-                dir('/var/lib/jenkins/workspace/sabujaks-backend/backend') {
-                    sh './gradlew bootJar'
+                dir('frontend') {
+                    sh "npm install"
+                    sh "npm run build"
                 }
             }
         }
-
-        // 4. Docker 빌드
+        // 3. docker build
         stage('Docker Build') {
             steps {
                 script {
-                    sh 'docker build -f cicd/jenkins/backend/Dockerfile -t sabujaks/backend:1.$BUILD_ID .'
+                    sh 'docker build -f cicd/jenkins/frontend/Dockerfile -t sabujaks/frontend:1.$BUILD_ID .'
                 }
             }
         }
-
-        // 5. Docker Push
+        // 4. Docker Push
         stage('Docker Push') {
             steps {
                 script {
@@ -47,22 +38,20 @@ pipeline {
                         sh "docker login -u ${DOCKER_EMAIL} -p ${DOCKER_PASSWORD}"
                     }
                     // Docker Push
-                    sh 'docker push sabujaks/backend:1.$BUILD_ID'
+                    sh 'docker push sabujaks/frontend:1.$BUILD_ID'
                 }
             }
         }
-
-        // 6. SSH 전송 및 배포 관리
+        // 5. SSH 전송 및 배포 관리
         stage('SSH transfer') {
             steps {
                 script {
                     def isOdd = (BUILD_ID.toInteger() % 2 != 0)
-                    def deploymentFile = isOdd ? 'backend-deployment-blue.yml' : 'backend-deployment-green.yml'
-                    def otherDeployment = isOdd ? 'backend-deployment-green' : 'backend-deployment-blue'
+                    def deploymentFile = isOdd ? 'frontend-deployment-blue.yml' : 'frontend-deployment-green.yml'
+                    def otherDeployment = isOdd ? 'frontend-deployment-green' : 'frontend-deployment-blue'
                     def newSelector = isOdd ? 'blue' : 'green'
-                    def serviceName = 'backend-svc'
-
-                    def deploymentName = deploymentFile.replace('backend-deployment-', '').replace('.yml', '')
+                    def serviceName = 'frontend-svc'
+                    def deploymentName = deploymentFile.replace('frontend-deployment-', '').replace('.yml', '')
 
                     // SSH 전송 플러그인 사용
                     sshPublisher(
@@ -81,19 +70,16 @@ pipeline {
                                 transfers: [
                                     sshTransfer(
                                         // 전송할 파일 지정
-                                        sourceFiles: "cicd/k8s/backend/${deploymentFile}",
+                                        sourceFiles: "cicd/k8s/frontend/${deploymentFile}",
                                         // 원격 디렉토리 지정 ( 원격서버로 파일을 전송할 위치 )
                                         remoteDirectory: "/home/test/",
                                         // 전송 후 야멜 파일의 VERSION을 파이프라인 빌드 숫자로 변경
                                         execCommand: """
-                                            sed -i "s/latest/1.${BUILD_ID}/g" /home/test/cicd/k8s/backend/${deploymentFile}
-                                            kubectl apply -f /home/test/cicd/k8s/backend/${deploymentFile}
-
+                                            sed -i "s/latest/1.${BUILD_ID}/g" /home/test/cicd/k8s/frontend/${deploymentFile}
+                                            kubectl apply -f /home/test/cicd/k8s/frontend/${deploymentFile}
                                             kubectl scale deployment ${deploymentName} --replicas=2
-
                                             kubectl scale deployment ${otherDeployment} --replicas=0
-
-                                            kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}","type":"backend"}}}'
+                                            kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}","type":"frontend"}}}'
                                         """
                                     )
                                 ]
