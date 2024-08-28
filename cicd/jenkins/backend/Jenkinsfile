@@ -5,8 +5,7 @@ pipeline {
         stage('git clone') {
             steps {
                 script {
-                    def branchName = '$BRANCH_NAME'
-                    echo ${branchName}
+                    def branchName = env.BRANCH_NAME
                     git branch: ${branchName}, url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
 //                 git branch: 'backend/cicd', url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
