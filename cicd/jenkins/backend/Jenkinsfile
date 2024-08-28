@@ -10,7 +10,6 @@ pipeline {
 
                     git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
-//                 git branch: 'backend/cicd', url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
             }
         }
 
