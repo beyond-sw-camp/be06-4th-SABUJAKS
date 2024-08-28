@@ -8,7 +8,7 @@ pipeline {
                     def branchName = env.GIT_BRANCH
                     echo "Checking out branch: ${branchName}"
 
-                    if (!branchName.startsWith('origin/backend/')) {
+                    if (!branchName.startsWith('origin/frontend/')) {
                         error "This pipeline only runs for frontend branches."
                     }
 
