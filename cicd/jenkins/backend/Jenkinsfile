@@ -7,6 +7,11 @@ pipeline {
                 script {
                     def branchName = env.GIT_BRANCH
                     echo "Checking out branch: ${branchName}"
+
+                    if (!branchName.startsWith('origin/backend/')) {
+                        error "This pipeline only runs for backend branches."
+                    }
+
                     git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
             }
