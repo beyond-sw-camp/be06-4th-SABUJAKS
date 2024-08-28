@@ -78,8 +78,9 @@ pipeline {
                                             sed -i "s/latest/1.${BUILD_ID}/g" /home/test/cicd/k8s/frontend/${deploymentFile}
                                             kubectl apply -f /home/test/cicd/k8s/frontend/${deploymentFile}
                                             kubectl scale deployment ${deploymentName} --replicas=2
-                                            kubectl scale deployment ${otherDeployment} --replicas=0
+                                            kubectl rollout status deployment/${deploymentName} --timeout=2m
                                             kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}","type":"frontend"}}}'
+                                            kubectl scale deployment ${otherDeployment} --replicas=0
                                         """
                                     )
                                 ]
