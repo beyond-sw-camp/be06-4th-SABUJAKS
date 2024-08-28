@@ -91,7 +91,10 @@ pipeline {
 
                                             kubectl scale deployment ${deploymentName} --replicas=2
 
-                                            kubectl rollout status deployment/${deploymentName}
+                                            while [[ $(kubectl get pods -l deployment=${newSelector} -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}' | grep -v 'False' | wc -l) -lt $(kubectl get pods -l deployment=${newSelector} -o 'jsonpath={.items[*].metadata.name}' | wc -w) ]]; do
+                                                echo "Waiting for pods to be ready..." && sleep 2;
+                                            done
+
                                             kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}","type":"backend"}}}'
 
                                             kubectl scale deployment ${otherDeployment} --replicas=0
