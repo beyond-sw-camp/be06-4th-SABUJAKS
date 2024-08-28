@@ -1,7 +1,6 @@
 pipeline {
     agent any
     stages {
-    stages {
         // 1. 깃 클론
         stage('git clone') {
             steps {
@@ -10,14 +9,6 @@ pipeline {
                     echo "Checking out branch: ${branchName}"
 
                     git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
-                }
-            }
-        }
-
-       stage('Print Branch Name') {
-            steps {
-                script {
-                    echo "현재 체크아웃된 브랜치: ${env.GIT_BRANCH}"
                 }
             }
         }
@@ -98,5 +89,5 @@ pipeline {
                 }
             }
         }
-            }
-        }
+    }
+}
