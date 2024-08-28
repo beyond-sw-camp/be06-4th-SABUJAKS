@@ -4,7 +4,12 @@ pipeline {
         // 1. 깃 클론
         stage('git clone') {
             steps {
-                git branch: 'backend/cicd', url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                script {
+                    def branchName = env.GIT_BRANCH.replaceFirst("origin/", "")
+                    echo "Checking out branch: ${branchName}"
+
+                    git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                }
             }
         }
 
