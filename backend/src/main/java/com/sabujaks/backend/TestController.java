@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
     @GetMapping("/test")
     public ResponseEntity<String> test() {
-        return ResponseEntity.ok("v1\n");
+        return ResponseEntity.ok("버전 업그레이드 완료\n");
     }
 }
