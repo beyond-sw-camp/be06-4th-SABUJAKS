@@ -3,6 +3,9 @@ pipeline {
     stages {
         // 1. 깃 클론
         stage('git clone') {
+           when {
+                branch pattern: '.*backend.*', comparator: 'REGEXP'
+            }
             steps {
                 script {
                     def branchName = env.GIT_BRANCH.replaceFirst("origin/", "")
