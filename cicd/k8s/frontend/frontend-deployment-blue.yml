@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend-deployment-test
+  name: frontend-deployment-blue
 spec:
   selector:
     matchLabels:
-      type: backend
-      ver: v1
+      type: frontend
+      deployment: blue
   replicas: 2
   strategy:
     type: RollingUpdate
@@ -14,12 +14,12 @@ spec:
   template:
     metadata:
       labels:
-        type: backend
-        ver: v1
+        type: frontend
+        deployment: blue
     spec:
       containers:
-        - name: backend-v1
-          image: sabujaks/backend:latest
+        - name: frontend-blue
+          image: sabujaks/frontend:latest
           readinessProbe:
             httpGet:
               path: /test

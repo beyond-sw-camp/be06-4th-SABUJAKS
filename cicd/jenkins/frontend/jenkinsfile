@@ -1,11 +1,18 @@
 pipeline {
     agent any
     stages {
+        // 1. git clone
         stage('git clone') {
             steps {
-                git branch: 'frontend/*', url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                script {
+                    def branchName = env.GIT_BRANCH.replaceFirst("origin/", "")
+                    echo "Checking out branch: ${branchName}"
+                    git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                }
             }
         }
+
+        // 2. npm install && build
         stage('npm install & build') {
             steps {
                 dir('frontend') {
@@ -14,6 +21,15 @@ pipeline {
                 }
             }
         }
+        // 3. docker build
+        stage('Docker Build') {
+            steps {
+                script {
+                    sh 'docker build -f cicd/jenkins/backend/Dockerfile -t sabujaks/backend:1.$BUILD_ID .'
+                }
+            }
+        }
+        // 4. Docker Push
         stage('Docker Push') {
             steps {
                 script {
@@ -21,68 +37,58 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'dockerhub_credential', usernameVariable: 'DOCKER_EMAIL', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh "docker login -u ${DOCKER_EMAIL} -p ${DOCKER_PASSWORD}"
                     }
-                    dir('cicd/jenkins/frontend'){
-                        sh 'pwd'
-                        sh 'docker build --tag sabujaks/frontend:1.$BUILD_ID .'
-                        sh 'docker push sabujaks/frontend:1.$BUILD_NUMBER'
-                    }
+                    // Docker Push
+                    sh 'docker push sabujaks/backend:1.$BUILD_ID'
                 }
             }
         }
-        // SSH 전송
-                stage('SSH transfer') {
-                    steps {
-                        // SSH 전송 플러그인 사용
-                        sshPublisher(
-                            // 오류 발생 시 진행을 멈춤
-                            continueOnError: false,
-                            // 오류 발생 시 파이프라인을 실패시킴
-                            failOnError: true,
-                            // 전송자 목록
-                            publishers: [
-                                // SSH 전송 설명
-                                sshPublisherDesc(
-                                    // SSH 서버 설정 이름 지정 ( master 노드 )
-                                    configName: "k8s-master",
-                                    // 자세한 출력 모드 활성화
-                                    verbose: true,
-                                    transfers: [
-                                        sshTransfer(
-                                            // 전송할 파일 지정
-                                            sourceFiles: "cicd/k8s/frontend/frontend-deployment.yml",
-                                            // 원격 디렉토리 지정 ( 원격서버로 파일을 전송할 위치 )
-                                            remoteDirectory: "/home/test/",
-                                            // 전송 후 야멜 파일의 VERSION을 파이프라인 빌드 숫자로 변경
-                                            // frontend-deployment 야멜 파일 실행
-                                            execCommand: '''
-                                                sed -i "s/latest/1.$BUILD_ID/g" cicd/k8s/frontend/frontend-deployment.yml
-                                                kubectl apply -f /home/test/cicd/k8s/frontend/frontend-deployment.yml
-                                                #!/bin/bash
+        // 5. SSH 전송 및 배포 관리
+        stage('SSH transfer') {
+            steps {
+                script {
+                    def isOdd = (BUILD_ID.toInteger() % 2 != 0)
+                    def deploymentFile = isOdd ? 'backend-deployment-blue.yml' : 'backend-deployment-green.yml'
+                    def otherDeployment = isOdd ? 'backend-deployment-green' : 'backend-deployment-blue'
+                    def newSelector = isOdd ? 'blue' : 'green'
+                    def serviceName = 'backend-svc'
 
-                                                # 현재 Deployment 파일 위치
-                                                DEPLOYMENT_FILE="cicd/k8s/frontend/frontend-deployment.yml"
+                    def deploymentName = deploymentFile.replace('frontend-deployment-', '').replace('.yml', '')
 
-                                                # $BUILD_ID의 값이 짝수인지 홀수인지 확인
-                                                if [ $(($BUILD_ID % 2)) -eq 0 ]; then
-                                                  # 짝수일 경우, green deployment로 이미지 변경 및 blue replicas를 0으로 설정
-                                                  sed -i "s|image: sabujaks/frontend:.*|image: sabujaks/frontend:1.$BUILD_ID|g" $DEPLOYMENT_FILE
-                                                  kubectl scale deployment frontend-deployment-blue --replicas=0
-                                                  kubectl apply -f $DEPLOYMENT_FILE
-                                                  kubectl scale deployment frontend-deployment-green --replicas=2
-                                                else
-                                                  # 홀수일 경우, blue deployment로 이미지 변경 및 green replicas를 0으로 설정
-                                                  sed -i "s|image: sabujaks|frontend:.*|image: sabujaks|frontend:1.$BUILD_ID/g" $DEPLOYMENT_FILE
-                                                  kubectl scale deployment frontend-deployment-green --replicas=0
-                                                  kubectl apply -f $DEPLOYMENT_FILE
-                                                  kubectl scale deployment frontend-deployment-blue --replicas=2
-                                                fi
-                                            '''
-                                        )
-                                    ]
-                                )
-                            ]
-                        )
-                    }
+                    // SSH 전송 플러그인 사용
+                    sshPublisher(
+                        // 오류 발생 시 진행을 멈춤
+                        continueOnError: false,
+                        // 오류 발생 시 파이프라인을 실패시킴
+                        failOnError: true,
+                        // 전송자 목록
+                        publishers: [
+                            // SSH 전송 설명
+                            sshPublisherDesc(
+                                // SSH 서버 설정 이름 지정 ( master 노드 )
+                                configName: "k8s-master",
+                                // 자세한 출력 모드 활성화
+                                verbose: true,
+                                transfers: [
+                                    sshTransfer(
+                                        // 전송할 파일 지정
+                                        sourceFiles: "cicd/k8s/backend/${deploymentFile}",
+                                        // 원격 디렉토리 지정 ( 원격서버로 파일을 전송할 위치 )
+                                        remoteDirectory: "/home/test/",
+                                        // 전송 후 야멜 파일의 VERSION을 파이프라인 빌드 숫자로 변경
+                                        execCommand: """
+                                            sed -i "s/latest/1.${BUILD_ID}/g" /home/test/cicd/k8s/frontend/${deploymentFile}
+                                            kubectl apply -f /home/test/cicd/k8s/frontend/${deploymentFile}
+                                            kubectl scale deployment ${deploymentName} --replicas=2
+                                            kubectl scale deployment ${otherDeployment} --replicas=0
+                                            kubectl patch service ${serviceName} -p '{"spec":{"selector":{"deployment":"${newSelector}","type":"frontend"}}}'
+                                        """
+                                    )
+                                ]
+                            )
+                        ]
+                    )
                 }
-    }
-}
+            }
+        }
+            }
+        }
