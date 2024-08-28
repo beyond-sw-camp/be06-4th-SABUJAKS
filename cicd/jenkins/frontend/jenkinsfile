@@ -6,12 +6,21 @@ pipeline {
             steps {
                 script {
                     def branchName = env.GIT_BRANCH.replaceFirst("origin/", "")
+                    def branchName = env.GIT_BRANCH?.replaceFirst("origin/", "")
+                    // 현재 브랜치 이름을 출력하여 확인
+                    echo "Current branch: ${branchName}"
                     echo "Checking out branch: ${branchName}"
                     git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
             }
         }
-
+       stage('Print Branch Name') {
+            steps {
+                script {
+                    echo "현재 체크아웃된 브랜치: ${env.GIT_BRANCH}"
+                }
+            }
+        }
         // 2. npm install && build
         stage('npm install & build') {
             steps {
