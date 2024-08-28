@@ -6,9 +6,11 @@ pipeline {
             steps {
                 script {
                     def branchName = env.GIT_BRANCH.replaceFirst("origin/", "")
-                    echo "Checking out branch: ${branchName}"
-
-                    git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                    echo "Branch Name: ${branchName}"
+//                     git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                    checkout([$class: 'GitSCM',
+                        branches: [[name: branchName]],
+                        userRemoteConfigs: [[url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS']]])
                 }
             }
         }
@@ -16,14 +18,14 @@ pipeline {
         // 2. 권한 추가
         stage('Add Permission') {
             steps {
-                sh 'chmod +x /var/lib/jenkins/workspace/test4/backend/gradlew'
+                sh 'chmod +x /var/lib/jenkins/workspace/sabujaks-backend/backend/gradlew'
             }
         }
 
         // 3. gradle 빌드
         stage('Build') {
             steps {
-                dir('/var/lib/jenkins/workspace/test4/backend') {
+                dir('/var/lib/jenkins/workspace/sabujaks-backend/backend') {
                     sh './gradlew bootJar'
                 }
             }
