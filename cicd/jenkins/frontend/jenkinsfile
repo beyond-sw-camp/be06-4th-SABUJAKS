@@ -1,41 +1,23 @@
 pipeline {
     agent any
     stages {
-        // 1. git clone
-        stage('git clone') {
-            steps {
-                script {
-                    def branchName = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                    echo "Current branch: ${branchName}"
-                    // 현재 브랜치 이름을 출력하여 확인
+//         // 1. git clone
+//         stage('git clone') {
+//             steps {
+//                 script {
+//                     def branchName = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
 //                     echo "Current branch: ${branchName}"
-                    if (branchName.startsWith('frontend/test/')) {
-                        // frontend/test/로 시작하는 모든 브랜치 에 대해 동일한 작업 수행
-                        echo "Running build for ${branchName}"
-                        // 여기에 빌드 작업 추가
-                    } else if (branchName == 'frontend/cicd') {
-                        // frontend/cicd 브랜치에 대한 작업
-                        echo "Running build for frontend/cicd"
-                        // 여기에 빌드 작업 추가
-                    }
-                    git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
-                }
-            }
-            steps {
-                script {
-                    def changedFiles = sh(script: "git diff --name-only HEAD^ HEAD", returnStdout: true).trim().split('\n')
-                    IS_BACKEND_CHANGED = changedFiles.any { it.startsWith("frontend/") }.toString()
-                    echo "frontend changes: ${IS_BACKEND_CHANGED}"
-                }
-            }
-        }
-       stage('Print Branch Name') {
-            steps {
-                script {
-                    echo "현재 체크아웃된 브랜치: ${env.GIT_BRANCH}"
-                }
-            }
-        }
+//                     git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+//                 }
+//             }
+//             steps {
+//                 script {
+//                     def changedFiles = sh(script: "git diff --name-only HEAD^ HEAD", returnStdout: true).trim().split('\n')
+//                     IS_BACKEND_CHANGED = changedFiles.any { it.startsWith("frontend/") }.toString()
+//                     echo "frontend changes: ${IS_BACKEND_CHANGED}"
+//                 }
+//             }
+//         }
         // 2. npm install && build
         stage('npm install & build') {
             steps {
