@@ -1,6 +1,19 @@
 pipeline {
     agent any
     stages {
+        stage('Print Webhook Payload') {
+            steps {
+                script {
+                    // GitHub webhook payload을 출력합니다.
+                    def webhookPayload = readJSON text: env.PAYLOAD
+                    echo "Webhook Payload: ${webhookPayload}"
+
+                    // 웹훅 이벤트 타입 출력
+                    def eventType = env.GITHUB_EVENT_NAME
+                    echo "Webhook Event Type: ${eventType}"
+                }
+            }
+        }
         // 1. 깃 클론
         stage('git clone') {
 
