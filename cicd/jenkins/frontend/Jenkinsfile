@@ -2,9 +2,11 @@ pipeline {
     agent any
     stages {
         stage('Check Branch'){
-            script {
-                if (!env.GIT_BRANCH.startsWith("backend/")) {
-                    error "This Jenkinsfile is intended for the backend branch only."
+            steps {
+                script {
+                    if (!env.GIT_BRANCH.startsWith("frontend/")) {
+                        error "This Jenkinsfile is intended for the frontend branch only."
+                    }
                 }
             }
         }
