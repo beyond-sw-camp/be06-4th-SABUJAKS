@@ -1,28 +1,18 @@
 pipeline {
     agent any
     stages {
-        stage('Check Branch'){
-            steps {
-                script {
-                    if (!env.GIT_BRANCH.startsWith("backend/")) {
-                        error "This Jenkinsfile is intended for the backend branch only."
-                    }
-                }
-            }
-        }
-
         // 1. 깃 클론
         stage('Git clone') {
             steps {
                 script {
-//                     def fullBranchName = env.GIT_BRANCH
-//                     echo "###Checking out full branch: ${fullBranchName}"
-//                     def branchName = fullBranchName.replaceFirst(/^origin\//, '')
-//                     echo "###Checking out branch: ${branchName}"
-//
-//                     if (!branchName.startsWith('backend/')) {
-//                         error "This pipeline only runs for backend branches."
-//                     }
+                    def fullBranchName = env.GIT_BRANCH
+                    echo "###Checking out full branch: ${fullBranchName}"
+                    def branchName = fullBranchName.replaceFirst(/^origin\//, '')
+                    echo "###Checking out branch: ${branchName}"
+
+                    if (!branchName.startsWith('backend/')) {
+                        error "This pipeline only runs for backend branches."
+                    }
 
                     git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
