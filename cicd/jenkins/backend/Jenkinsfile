@@ -6,15 +6,12 @@ pipeline {
             steps {
                 script {
                     def fullBranchName = env.GIT_BRANCH
-                    echo "###Checking out full branch: ${fullBranchName}"
-                    def branchName = fullBranchName.replaceFirst(/^origin\//, '')
-                    echo "###Checking out branch: ${branchName}"
+                    echo "$$$$$$$$$$$$$$$$$$$$$$$$ 현재 브랜치는 ${fullBranchName} $$$$$$$$$$$$$$$$$$$$$$$$$$$"
+//                     if (!branchName.startsWith('backend/')) {
+//                         error "This pipeline only runs for backend branches."
+//                     }
 
-                    if (!branchName.startsWith('backend/')) {
-                        error "This pipeline only runs for backend branches."
-                    }
-
-                    git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                    git branch: "${fullBranchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
             }
         }
