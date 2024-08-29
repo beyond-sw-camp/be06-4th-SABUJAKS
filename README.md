@@ -147,6 +147,10 @@ Jenkins server 1 🖥️<br>
 ### 백엔드 Blue/Green 배포
 ![백엔드 배포](https://github.com/user-attachments/assets/e42db20c-8a54-433f-85e6-bc4857d2e7cf)
 
+### 프론트엔트 Blue/Green 배포
+![프론트 배포f](https://github.com/user-attachments/assets/a33214b7-9e70-4040-b538-1b4dbf719092)
+(영상화질개선예정)
+
 <br><br><br><br><br>
 
 
