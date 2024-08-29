@@ -7,10 +7,10 @@ pipeline {
                 script {
                     def fullBranchName = env.GIT_BRANCH
                     def changeBranchName = env.BRANCH_NAME
-                    echo "Checking out full branch: ${fullBranchName}"
+                    echo "###Checking out full branch: ${fullBranchName}"
                     def branchName = fullBranchName.replaceFirst(/^origin\//, '')
-                    echo "Checking out branch: ${branchName}"
-                    echo "Checking env value: ${changeBranchName}"
+                    echo "###Checking out branch: ${branchName}"
+                    echo "###Checking env value: ${changeBranchName}"
 
                     // test
                     if (!branchName.startsWith('backend/')) {
