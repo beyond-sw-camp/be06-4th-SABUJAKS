@@ -146,10 +146,20 @@ Jenkins server 1 🖥️<br>
 <!--예시 [시연영상](https://youtu.be/rzBV5B_kKbU)-->
 ### 백엔드 Blue/Green 배포
 ![백엔드 배포](https://github.com/user-attachments/assets/e42db20c-8a54-433f-85e6-bc4857d2e7cf)
+<br>
+➡️백엔드(프론트) 버전을 바꾸고 깃에 푸시 
+➡️ 젠킨스 파이프라인이 작동 
+➡️ 쿠버네티스에서 백엔드파드가 자동으로 새로 생성되는거 확인 블루<->그린
+➡️ 바뀐 스프링 서버 버전 확인
+<br>
 
 ### 프론트엔트 Blue/Green 배포
-![프론트 배포f](https://github.com/user-attachments/assets/a33214b7-9e70-4040-b538-1b4dbf719092)
-(영상화질개선예정)
+https://youtu.be/Oh7cYU5cf8E
+<br>
+➡️프론트엔드를 수정하고 깃에 푸시
+➡️ 젠킨스 파이프라인이 작동 
+➡️ 쿠버네티스에서 프론트엔드파드가 자동으로 새로 생성되는거 확인 블루<->그린
+➡️ 바뀐 화면 글씨 확인
 
 <br><br><br><br><br>
 
