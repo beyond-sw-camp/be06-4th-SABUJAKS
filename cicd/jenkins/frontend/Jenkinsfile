@@ -1,10 +1,10 @@
 pipeline {
     agent any
     stages {
-        stage('Print Webhook Payload') {
-            steps {
-                script {
-                    echo "Webhook Payload: ${env.PAYLOAD}"
+        stage('Check Branch'){
+            script {
+                if (!env.GIT_BRANCH.startsWith("backend/")) {
+                    error "This Jenkinsfile is intended for the backend branch only."
                 }
             }
         }
@@ -13,17 +13,18 @@ pipeline {
 
             steps {
                 script {
-                    def fullBranchName = env.GIT_BRANCH
-                    echo "@@@Checking out full branch: ${fullBranchName}"
-                    def branchName = fullBranchName.replaceFirst(/^origin\//, '')
-                    echo "@@@Checking out branch: ${branchName}"
 
-                    if (!branchName.startsWith('frontend/')) {
-                        error "This pipeline only runs for frontend branches."
-                    }
+                def fullBranchName = env.GIT_BRANCH
+                echo "@@@Checking out full branch: ${fullBranchName}"
+                def branchName = fullBranchName.replaceFirst(/^origin\//, '')
+                echo "@@@Checking out branch: ${branchName}"
 
-                    git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                if (!branchName.startsWith('frontend/')) {
+                    error "This pipeline only runs for frontend branches."
                 }
+
+                git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+            }
             }
         }
         // 2. npm install && build
