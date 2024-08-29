@@ -7,8 +7,16 @@
       <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
     </p>
     <p>사부작사부작사부작사부작</p>
+<<<<<<< HEAD
     <p>사부작사부작사부작사부작</p>
     <p>사부작사부작사부작사부작</p>
+=======
+    <p>사부작사부작사부작사부작</p><p>사부작사부작사부작사부작</p>
+    <p>사부작사부작사부작사부작</p>
+    <p>사부작사부작사부작사부작</p>
+    <p>사부작사부작사부작사부작</p>
+
+>>>>>>> 1d89406b8bcee504477cbaba9ad2b5cc3c86424f
     <h3>Installed CLI Plugins</h3>
     <ul>
       <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
