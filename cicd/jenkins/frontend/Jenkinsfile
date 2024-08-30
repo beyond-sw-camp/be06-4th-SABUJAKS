@@ -1,14 +1,18 @@
 pipeline {
     agent any
+      environment {
+            PULL_REQUEST_BASE_BRANCH = "${env.PULL_REQUEST_BASE_BRANCH}"
+            PUSH_BRANCH = "${env.PUSH_BRANCH}" // General Webhook Trigger에서 설정된 PUSH_BRANCH
+            IF_MERGED = "${env.IF_MERGED}"
+    }
     stages {
         // 1. 깃 클론
-        stage('git clone') {
-
+        stage('Git clone') {
             steps {
                 script {
-                def fullBranchName = env.GIT_BRANCH
-                git branch: "${fullBranchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
-            }
+                     def branchToUse = (IF_MERGED == 'true') ? PULL_REQUEST_BASE_BRANCH : PUSH_BRANCH
+                    git branch: "${branchToUse}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                }
             }
         }
         // 2. npm install && build
