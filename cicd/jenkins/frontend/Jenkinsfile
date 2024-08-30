@@ -6,10 +6,7 @@ pipeline {
 
             steps {
                 script {
-
                 def fullBranchName = env.GIT_BRANCH
-                echo "$$$$$$$$$$$$$$$$$$$$$$$$ 현재 브랜치는 ${fullBranchName} $$$$$$$$$$$$$$$$$$$$$$$$$$$"
-
                 git branch: "${fullBranchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
             }
             }
