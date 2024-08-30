@@ -12,6 +12,7 @@ pipeline {
                 script {
                     sh 'echo ${env.IF_MERGED}'
                     sh '제발제발'
+                    sh '제발제발'
                     def branchToUse = (IF_MERGED == 'true') ? PULL_REQUEST_BASE_BRANCH : PUSH_BRANCH
                     git branch: "${branchToUse}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
