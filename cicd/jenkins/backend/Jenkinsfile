@@ -1,20 +1,17 @@
 pipeline {
     agent any
+      environment {
+            PULL_REQUEST_BASE_BRANCH = "${env.PULL_REQUEST_BASE_BRANCH}"
+            PUSH_BRANCH = "${env.PUSH_BRANCH}" // General Webhook Trigger에서 설정된 PUSH_BRANCH
+            IF_MERGED = "${env.IF_MERGED}"
+    }
     stages {
         // 1. 깃 클론
-        stage('git clone') {
+        stage('Git clone') {
             steps {
                 script {
-                    def fullBranchName = env.GIT_BRANCH
-                    echo "###Checking out full branch: ${fullBranchName}"
-                    def branchName = fullBranchName.replaceFirst(/^origin\//, '')
-                    echo "###Checking out branch: ${branchName}"
-
-                    if (!branchName.startsWith('backend/')) {
-                        error "This pipeline only runs for backend branches."
-                    }
-
-                    git branch: "${branchName}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
+                     def branchToUse = (IF_MERGED == 'true') ? PULL_REQUEST_BASE_BRANCH : PUSH_BRANCH
+                    git branch: "${branchToUse}", url: 'https://github.com/beyond-sw-camp/be06-4th-SABUJAKS'
                 }
             }
         }
