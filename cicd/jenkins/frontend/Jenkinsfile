@@ -6,6 +6,7 @@ pipeline {
             IF_MERGED = "${env.IF_MERGED}"
     }
     stages {
+
         // 1. 깃 클론
         stage('Git clone') {
             steps {
@@ -15,6 +16,7 @@ pipeline {
                 }
             }
         }
+
         // 2. npm install && build
         stage('npm install & build') {
             steps {
@@ -24,6 +26,7 @@ pipeline {
                 }
             }
         }
+
         // 3. docker build
         stage('Docker Build') {
             steps {
@@ -32,6 +35,7 @@ pipeline {
                 }
             }
         }
+
         // 4. Docker Push
         stage('Docker Push') {
             steps {
@@ -45,6 +49,7 @@ pipeline {
                 }
             }
         }
+
         // 5. SSH 전송 및 배포 관리
         stage('SSH transfer') {
             steps {

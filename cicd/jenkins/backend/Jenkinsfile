@@ -5,6 +5,7 @@ pipeline {
             PUSH_BRANCH = "${env.PUSH_BRANCH}" // General Webhook Trigger에서 설정된 PUSH_BRANCH
             IF_MERGED = "${env.IF_MERGED}"
     }
+
     stages {
         // 1. 깃 클론
         stage('Git clone') {
